@@ -66,7 +66,7 @@ client = Mistral(api_key=api_key)
 # Initialize LLM (Gemini)
 try:
     llm = ChatVertexAI(
-        model="gemini-1.5-pro",  # Use a valid, stable model
+        model="gemini-2.5-pro",  # Use a valid, stable model
         temperature=0.3,
     )
 except Exception as e:
