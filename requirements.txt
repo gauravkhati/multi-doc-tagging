@@ -3,3 +3,6 @@ pydantic
 python-dotenv
 pycountry
 streamlit
+langchain-google-vertexai
+google-cloud-aiplatform
+PyPDF2

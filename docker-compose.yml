@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: mistral-ocr-app
+    ports:
+      - "8501:8501"
+    environment:
+      # Pass through environment variables (do NOT bake secrets into the image)
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/storage.json
+    volumes:
+      # Optional: mount local source for live reload (comment out in production)
+      - .:/app:rw
+    secrets:
+      - storage.json
+    command: ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+
+secrets:
+  storage.json:
+    # Bind-mount local storage.json as a Docker secret at runtime only
+    file: ./storage.json

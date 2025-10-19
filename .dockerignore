@@ -1,0 +1,17 @@
+# Do not send secrets or heavy local artifacts to the Docker build context
+.env
+storage.json
+*.pdf
+__pycache__/
+*.pyc
+.DS_Store
+.git
+.gitignore
+.venv
+.vscode
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.coverage
+**/dist
+**/build
