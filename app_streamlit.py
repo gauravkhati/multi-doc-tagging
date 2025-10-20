@@ -6,6 +6,7 @@ import os
 import json
 import base64
 import tempfile
+import zipfile
 import streamlit as st
 from mistralai import Mistral
 from dotenv import find_dotenv, load_dotenv
@@ -225,6 +226,27 @@ def splitPdfBasedOnCategories(documentsData, file_bytes):
     
     return split_pdfs
 
+def create_zip_from_pdfs(split_pdfs: dict) -> bytes:
+    """
+    Create a ZIP file containing all categorized PDFs.
+    
+    Args:
+        split_pdfs: Dictionary with category names as keys and PDF bytes as values
+    
+    Returns:
+        ZIP file as bytes
+    """
+    zip_buffer = BytesIO()
+    
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for category, pdf_bytes in split_pdfs.items():
+            # Add each PDF to the ZIP with a clean filename
+            filename = f"{category}.pdf"
+            zip_file.writestr(filename, pdf_bytes)
+    
+    zip_buffer.seek(0)
+    return zip_buffer.getvalue()
+
 # Streamlit UI
 st.set_page_config(
     page_title="Mistral OCR - Document Classifier",
@@ -278,8 +300,23 @@ if uploaded_file:
                             
                             st.subheader("📥 Download Split PDFs")
                             
+                            # Add bulk download button at the top
+                            zip_bytes = create_zip_from_pdfs(split_pdfs)
+                            st.download_button(
+                                label=f"📦 Download All PDFs as ZIP ({len(split_pdfs)} files)",
+                                data=zip_bytes,
+                                file_name=f"{file_name.rsplit('.', 1)[0]}_categorized.zip",
+                                mime="application/zip",
+                                type="primary",
+                                use_container_width=True
+                            )
+                            
+                            st.markdown("---")
+                            st.markdown("**Or download individual PDFs:**")
+                            
                             cols = st.columns(2)
                             col_idx = 0
+                            
                             
                             for category, pdf_bytes in split_pdfs.items():
                                 with cols[col_idx % 2]:
@@ -291,6 +328,7 @@ if uploaded_file:
                                         key=f"download_{category}"
                                     )
                                 col_idx += 1
+                            
                         else:
                             st.warning("No PDFs were created. All categories might be empty.")
                     else:
