@@ -232,7 +232,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("📄 Mistral OCR - Document Classifier")
+st.title("📄 Multi Page Document Classifier")
 st.markdown("Upload a PDF to automatically classify and split documents by category.")
 
 uploaded_file = st.file_uploader("Upload a PDF", type=["pdf"], help="Upload a multi-page PDF document")
